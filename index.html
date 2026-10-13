@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MYP2 Design Cycle + Computational Thinking</title>
+<style>
+  *{box-sizing:border-box;}
+  :root{
+    --primary:#4f46e5;
+    --primary-dark:#3730a3;
+    --accent:#06b6d4;
+    --soft:#eef2ff;
+    --ink:#1e293b;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --card:#ffffff;
+    --bg:#f1f5f9;
+    --radius:20px;
+    --shadow:0 10px 30px rgba(15,23,42,.08);
+  }
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 8% 0%, #e0e7ff 0%, transparent 45%),
+      radial-gradient(circle at 92% 100%, #cffafe 0%, transparent 45%),
+      var(--bg);
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    transition:background .4s ease;
+  }
+  body[data-theme="drone"]{
+    --primary:#0d9488;
+    --primary-dark:#0f766e;
+    --accent:#f59e0b;
+    --soft:#ccfbf1;
+    background:
+      radial-gradient(circle at 8% 0%, #ccfbf1 0%, transparent 45%),
+      radial-gradient(circle at 92% 100%, #fef3c7 0%, transparent 45%),
+      var(--bg);
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .header-inner{
+    max-width:960px;margin:0 auto;padding:12px 20px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:.95rem;}
+  .logo{
+    width:34px;height:34px;border-radius:11px;flex:none;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    display:grid;place-items:center;color:#fff;font-size:16px;
+    transition:background .4s ease;
+  }
+  .step-label{
+    margin-left:auto;font-size:.8rem;color:var(--muted);font-weight:700;
+    text-align:right;max-width:55%;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .progress{height:5px;background:var(--line);}
+  .progress > i{
+    display:block;height:100%;width:0;
+    background:linear-gradient(90deg,var(--primary),var(--accent));
+    transition:width .35s ease, background .4s ease;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  main{flex:1;display:flex;justify-content:center;padding:30px 20px 130px;}
+  .stage{width:100%;max-width:900px;}
+  .page{display:none;}
+  .page.active{display:block;animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+  .card{
+    background:var(--card);border-radius:var(--radius);
+    padding:36px 38px;box-shadow:var(--shadow);
+    border:1px solid rgba(226,232,240,.9);
+  }
+  .card + .card{margin-top:18px;}
+  .center{text-align:center;}
+
+  h1{font-size:2.15rem;line-height:1.12;margin:0 0 12px;letter-spacing:-.02em;}
+  h2{font-size:1.55rem;margin:0 0 10px;letter-spacing:-.01em;}
+  h3{font-size:1.05rem;margin:0 0 6px;}
+  p{margin:0 0 14px;line-height:1.65;}
+  .sub{color:var(--muted);font-size:1.03rem;margin:0 0 20px;}
+  .eyebrow{
+    font-size:.74rem;letter-spacing:.17em;text-transform:uppercase;
+    color:var(--primary);font-weight:800;margin-bottom:12px;
+    transition:color .4s ease;
+  }
+  .plus{color:var(--primary);}
+  .tip{font-size:.86rem;color:var(--muted);margin-top:20px;}
+
+  ul.clean{list-style:none;padding:0;margin:0;display:grid;gap:13px;}
+  ul.clean li{position:relative;padding-left:36px;line-height:1.6;}
+  ul.clean li::before{
+    content:"✓";position:absolute;left:0;top:1px;
+    width:23px;height:23px;border-radius:50%;
+    background:var(--soft);color:var(--primary);
+    display:grid;place-items:center;font-size:.72rem;font-weight:900;
+    transition:background .4s ease,color .4s ease;
+  }
+
+  .pipeline{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin:26px 0 4px;}
+  .pipeline span{
+    background:var(--soft);color:var(--primary-dark);
+    font-weight:800;font-size:.78rem;letter-spacing:.09em;
+    padding:10px 16px;border-radius:999px;
+    transition:background .4s ease,color .4s ease;
+  }
+  .pipeline i{color:var(--muted);font-style:normal;font-weight:700;}
+
+  .loop{
+    margin-top:26px;padding:20px;border-radius:16px;text-align:center;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    color:#fff;font-weight:800;letter-spacing:.12em;font-size:1.02rem;
+    transition:background .4s ease;
+  }
+
+  .stage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-top:14px;}
+  .stage-card{
+    border:1.5px solid var(--line);border-radius:16px;padding:18px;
+    background:#fbfdff;transition:transform .2s, border-color .2s, box-shadow .2s;
+  }
+  .stage-card:hover{transform:translateY(-3px);border-color:var(--primary);box-shadow:0 10px 22px rgba(15,23,42,.08);}
+  .stage-card b{
+    display:inline-grid;place-items:center;width:34px;height:34px;
+    border-radius:10px;background:var(--primary);color:#fff;
+    font-size:.95rem;margin-bottom:10px;transition:background .4s ease;
+  }
+  .stage-card span{display:block;font-size:.86rem;color:var(--muted);line-height:1.5;}
+
+  .bigletter{
+    display:inline-grid;place-items:center;width:64px;height:64px;
+    border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--accent));
+    color:#fff;font-size:1.8rem;font-weight:900;margin-bottom:16px;
+    box-shadow:0 10px 22px rgba(79,70,229,.25);
+    transition:background .4s ease;
+  }
+
+  .moves-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px;}
+  .move{
+    border-radius:16px;padding:18px;border:1.5px solid var(--line);
+    background:#fbfdff;
+  }
+  .move b{
+    display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;
+    background:var(--soft);color:var(--primary);font-size:.85rem;margin-bottom:10px;
+  }
+  .move h3{font-size:.98rem;}
+  .move p{font-size:.88rem;color:var(--muted);margin:0;line-height:1.55;}
+
+  .codebox{
+    background:#0f172a;color:#e2e8f0;border-radius:14px;padding:18px 20px;
+    font-family:"Consolas","Monaco",monospace;font-size:.9rem;line-height:1.7;
+    margin-top:16px;overflow-x:auto;
+  }
+  .codebox em{color:#67e8f9;font-style:normal;}
+  .codebox b{color:#fbbf24;}
+
+  .pill{
+    display:inline-block;background:var(--soft);color:var(--primary-dark);
+    font-weight:800;font-size:.78rem;letter-spacing:.1em;
+    padding:8px 16px;border-radius:999px;margin-bottom:16px;
+  }
+
+  /* ---------- DRONE SECTION ---------- */
+  .drone-banner{
+    display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    color:#fff;border-radius:16px;padding:14px 18px;margin-bottom:18px;
+    font-weight:800;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .drone-banner .icon{font-size:1.3rem;}
+
+  .field{margin-top:24px;}
+  .field label{
+    display:block;font-weight:800;margin-bottom:8px;line-height:1.45;
+    font-size:1rem;color:var(--ink);
+  }
+  .field .hint{
+    font-size:.85rem;color:var(--muted);font-weight:500;
+    margin:-2px 0 10px;line-height:1.5;
+  }
+  textarea{
+    width:100%;min-height:120px;resize:vertical;
+    padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);
+    font:inherit;font-size:.98rem;line-height:1.6;color:var(--ink);
+    background:#fbfdff;transition:border-color .2s, box-shadow .2s, background .2s;
+  }
+  textarea::placeholder{color:#a8b3c4;}
+  textarea:focus{
+    outline:none;border-color:var(--primary);background:#fff;
+    box-shadow:0 0 0 4px var(--soft);
+  }
+  .counter{font-size:.74rem;color:var(--muted);text-align:right;margin-top:6px;font-weight:600;}
+
+  .rev-item{
+    border-left:4px solid var(--primary);background:#fbfdff;
+    border-radius:0 14px 14px 0;padding:16px 18px;margin-bottom:14px;
+  }
+  .rev-q{font-weight:800;font-size:.94rem;margin-bottom:8px;}
+  .rev-a{font-size:.94rem;line-height:1.65;color:#334155;white-space:pre-wrap;}
+  .rev-a em{color:#94a3b8;}
+
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;}
+
+  /* ---------- NAV BAR ---------- */
+  .navbar{
+    position:fixed;bottom:0;left:0;right:0;z-index:30;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);padding:12px 20px;
+  }
+  .nav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+  .btn{
+    border:none;cursor:pointer;font:inherit;font-weight:800;font-size:.9rem;
+    padding:12px 24px;border-radius:999px;transition:.2s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;box-shadow:0 6px 16px rgba(79,70,229,.28);
+  }
+  .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(79,70,229,.34);}
+  .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink);}
+  .btn-ghost:hover:not(:disabled){border-color:var(--primary);color:var(--primary);}
+  .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+  .nav-mid{
+    margin:0 auto;font-size:.8rem;color:var(--muted);font-weight:800;
+    letter-spacing:.04em;white-space:nowrap;
+  }
+
+  @media (max-width:640px){
+    .card{padding:26px 22px;}
+    h1{font-size:1.6rem;}
+    h2{font-size:1.3rem;}
+    .step-label{display:none;}
+    .nav-mid{font-size:.72rem;}
+    .btn{padding:11px 18px;font-size:.84rem;}
+  }
+
+  @media print{
+    header,.navbar{display:none !important;}
+    main{padding:0;}
+    .page{display:none !important;}
+    .page.active{display:block !important;}
+    .card{box-shadow:none;border:none;padding:0;}
+    .btn-row{display:none;}
+  }
+</style>
+</head>
+<body data-theme="design">
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">◆</div>
+      <span>MYP2 Design Cycle</span>
+    </div>
+    <div class="step-label" id="stepLabel">Welcome</div>
+  </div>
+  <div class="progress"><i id="progressFill"></i></div>
+</header>
+
+<main>
+<div class="stage" id="stage">
+
+  <!-- ============ 1. TITLE ============ -->
+  <section class="page active" data-title="Welcome">
+    <div class="card center">
+      <div class="eyebrow">MYP2 • Discover → Imagine → Make → Improve</div>
+      <h1>Design Cycle<br><span class="plus">+</span> Computational Thinking</h1>
+      <p class="sub">How designers turn messy problems into useful solutions.</p>
+      <div class="pipeline">
+        <span>DISCOVER</span><i>→</i>
+        <span>IMAGINE</span><i>→</i>
+        <span>MAKE</span><i>→</i>
+        <span>IMPROVE</span>
+      </div>
+      <p class="tip">Use <b>Next</b> and <b>Back</b> below — or your ← → arrow keys — to move through the lesson.</p>
+    </div>
+  </section>
+
+  <!-- ============ 2. MISSION ============ -->
+  <section class="page" data-title="Today's mission">
+    <div class="card">
+      <div class="eyebrow">Today's mission</div>
+      <h2>By the end, you will be able to…</h2>
+      <p class="sub">Explain the cycle and use computational thinking.</p>
+      <ul class="clean">
+        <li>Recognise the four stages of the MYP Design Cycle.</li>
+        <li>Use decomposition, pattern recognition, abstraction and algorithms.</li>
+        <li>Test a solution, learn from evidence and improve it.</li>
+        <li>Explain why iteration is normal — not a sign of failure.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 3. BIG IDEA ============ -->
+  <section class="page" data-title="The big idea">
+    <div class="card">
+      <div class="eyebrow">The big idea</div>
+      <h2>Design is a cycle</h2>
+      <p class="sub">A solution is not “finished” just because you made it.</p>
+      <ul class="clean">
+        <li>A problem creates a <b>need</b>.</li>
+        <li>Research helps you understand the <b>people, context and constraints</b>.</li>
+        <li>Ideas become plans, plans become prototypes, and prototypes create <b>evidence</b>.</li>
+        <li>Evaluation sends you back around the cycle to <b>improve</b>.</li>
+      </ul>
+      <div class="loop">↻ &nbsp; TRY → TEST → IMPROVE</div>
+    </div>
+  </section>
+
+  <!-- ============ 4. FOUR STAGES ============ -->
+  <section class="page" data-title="The four MYP stages">
+    <div class="card">
+      <div class="eyebrow">The four MYP stages</div>
+      <h2>A → B → C → D → back to A</h2>
+      <p class="sub">The arrows show movement and feedback, not a rigid straight line.</p>
+      <div class="stage-grid">
+        <div class="stage-card">
+          <b>A</b>
+          <h3>Inquiring and analysing</h3>
+          <span>Investigate the problem and the need.</span>
+        </div>
+        <div class="stage-card">
+          <b>B</b>
+          <h3>Developing ideas</h3>
+          <span>Turn research into criteria and possible designs.</span>
+        </div>
+        <div class="stage-card">
+          <b>C</b>
+          <h3>Creating the solution</h3>
+          <span>Plan, make and document the solution.</span>
+        </div>
+        <div class="stage-card">
+          <b>D</b>
+          <h3>Evaluating</h3>
+          <span>Test against criteria, collect feedback and propose improvements.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. STAGE A ============ -->
+  <section class="page" data-title="A — Inquiring and analysing">
+    <div class="card">
+      <div class="bigletter">A</div>
+      <div class="eyebrow">Inquiring and analysing</div>
+      <h2>Be a detective before becoming a maker.</h2>
+      <p class="sub">WHO? &nbsp;·&nbsp; WHAT? &nbsp;·&nbsp; WHY?</p>
+      <ul class="clean">
+        <li><b>Explain and justify the need:</b> Who has the problem? Why does it matter?</li>
+        <li><b>Identify and prioritise research:</b> What do you need to find out first?</li>
+        <li><b>Analyse existing products:</b> What already works? What could be improved?</li>
+        <li><b>Write a design brief:</b> one clear statement of the problem and intended user.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 6. STAGE B ============ -->
+  <section class="page" data-title="B — Developing ideas">
+    <div class="card">
+      <div class="bigletter">B</div>
+      <div class="eyebrow">Developing ideas</div>
+      <h2>Move from “I have an idea” to “I can justify this design”.</h2>
+      <p class="sub">IDEAS + EVIDENCE</p>
+      <ul class="clean">
+        <li><b>Create a design specification:</b> measurable must-haves and constraints.</li>
+        <li><b>Develop several ideas:</b> quantity first; judgement later.</li>
+        <li><b>Annotate sketches:</b> materials, dimensions, functions and user actions.</li>
+        <li><b>Present and justify</b> the chosen design using the specification.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 7. STAGE C ============ -->
+  <section class="page" data-title="C — Creating the solution">
+    <div class="card">
+      <div class="bigletter">C</div>
+      <div class="eyebrow">Creating the solution</div>
+      <h2>A good plan makes making safer, clearer and more efficient.</h2>
+      <p class="sub">PLAN → MAKE</p>
+      <ul class="clean">
+        <li>Develop planning drawings or diagrams.</li>
+        <li>Construct a logical plan: steps, order, time, tools, materials and risks.</li>
+        <li>Demonstrate technical skills safely and accurately.</li>
+        <li>Follow the plan — but record and justify sensible changes.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 8. STAGE D ============ -->
+  <section class="page" data-title="D — Evaluating">
+    <div class="card">
+      <div class="bigletter">D</div>
+      <div class="eyebrow">Evaluating</div>
+      <h2>Evaluation is evidence-based judgement, not “I like it”.</h2>
+      <p class="sub">TEST + FEEDBACK</p>
+      <ul class="clean">
+        <li>Design testing methods that match your success criteria.</li>
+        <li>Collect results: measurements, observations and user feedback.</li>
+        <li>Evaluate success: which criteria were met, partly met or missed?</li>
+        <li>Explain how the solution could be improved and what you would change next.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 9. CT INTRO ============ -->
+  <section class="page" data-title="Computational thinking">
+    <div class="card">
+      <div class="eyebrow">Computational thinking</div>
+      <h2>It is not just coding</h2>
+      <p class="sub">It is a toolkit for solving problems so that a person <i>or a computer</i> can follow the solution.</p>
+      <ul class="clean">
+        <li>Formulate the problem clearly.</li>
+        <li>Break it into manageable parts.</li>
+        <li>Spot similarities and reusable solutions.</li>
+        <li>Ignore irrelevant detail while keeping what matters.</li>
+        <li>Create, test, debug and improve a step-by-step method.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 10. FOUR MOVES ============ -->
+  <section class="page" data-title="Four powerful moves">
+    <div class="card">
+      <div class="eyebrow">Four powerful moves</div>
+      <h2>Use these inside any stage of the Design Cycle</h2>
+      <p class="sub">D &nbsp;·&nbsp; P &nbsp;·&nbsp; A &nbsp;·&nbsp; A</p>
+      <div class="moves-grid">
+        <div class="move">
+          <b>D</b>
+          <h3>Decomposition</h3>
+          <p>Break one complex problem into smaller sub-problems.</p>
+        </div>
+        <div class="move">
+          <b>P</b>
+          <h3>Pattern recognition</h3>
+          <p>Identify similarities, repetitions or trends.</p>
+        </div>
+        <div class="move">
+          <b>A</b>
+          <h3>Abstraction</h3>
+          <p>Focus on essential information and leave out distracting detail.</p>
+        </div>
+        <div class="move">
+          <b>A</b>
+          <h3>Algorithmic thinking</h3>
+          <p>Write precise steps that produce a predictable result.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 11. EXAMPLE ============ -->
+  <section class="page" data-title="Example: healthier school break">
+    <div class="card">
+      <div class="eyebrow">Example</div>
+      <h2>A healthier school break</h2>
+      <p class="sub">Let’s apply both frameworks to one realistic challenge: SNACK + WASTE.</p>
+      <ul class="clean">
+        <li><b>Problem:</b> students want a quick, enjoyable snack with less packaging waste.</li>
+        <li><b>Decompose:</b> user needs; nutrition; cost; materials; storage; production; testing.</li>
+        <li><b>Patterns:</b> similar containers, repeated user preferences, common portion sizes.</li>
+        <li><b>Abstract:</b> model the important variables — cost, capacity, usability and waste.</li>
+        <li><b>Algorithm:</b> research → choose criteria → prototype → test → improve.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 12. ALGORITHMS ============ -->
+  <section class="page" data-title="Algorithms: precise instructions">
+    <div class="card">
+      <div class="eyebrow">Algorithms</div>
+      <h2>Precise instructions</h2>
+      <p class="sub">If another person cannot follow your steps, the algorithm needs debugging.</p>
+      <ul class="clean">
+        <li><b>Sequence:</b> actions happen in a specific order.</li>
+        <li><b>Selection:</b> choose what to do based on a condition — IF… THEN… ELSE…</li>
+        <li><b>Iteration:</b> repeat steps until a condition is met.</li>
+      </ul>
+      <div class="codebox">
+        <b>IF</b> the container leaks<br>
+        &nbsp;&nbsp;<b>THEN</b> redesign the seal<br>
+        <b>ELSE</b><br>
+        &nbsp;&nbsp;test durability <em>↻ repeat</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13. DEBUGGING ============ -->
+  <section class="page" data-title="Debugging and iteration">
+    <div class="card">
+      <div class="eyebrow">Debugging and iteration</div>
+      <h2>Errors are information about the design</h2>
+      <p class="sub">Not evidence that you are bad at designing.</p>
+      <ul class="clean">
+        <li>Test with realistic inputs, users and conditions.</li>
+        <li>Find the point where the result differs from what you expected.</li>
+        <li>Change one important feature at a time when possible.</li>
+        <li>Test again and document what the evidence shows.</li>
+      </ul>
+      <div class="loop">ERROR → CLUE → FIX</div>
+    </div>
+  </section>
+
+  <!-- ============ 14. HOW THEY FIT ============ -->
+  <section class="page" data-title="How the ideas fit together">
+    <div class="card">
+      <div class="eyebrow">How the ideas fit together</div>
+      <h2>Design Cycle + Computational Thinking</h2>
+      <p class="sub">The Design Cycle tells you <b>what kind</b> of design work to do; computational thinking helps you <b>do it clearly</b>.</p>
+      <ul class="clean">
+        <li><b>Inquiring:</b> formulate the problem, decompose it and research patterns.</li>
+        <li><b>Developing:</b> abstract the requirements and write success criteria or algorithms.</li>
+        <li><b>Creating:</b> use logical plans, sequences, decisions and repetition.</li>
+        <li><b>Evaluating:</b> test, debug, compare evidence and iterate.</li>
+      </ul>
+      <div class="loop">DESIGN + CT = SMARTER SOLUTIONS</div>
+    </div>
+  </section>
+
+  <!-- ============ 15. QUICK CHECK ============ -->
+  <section class="page" data-title="Quick check">
+    <div class="card">
+      <div class="eyebrow">Quick check</div>
+      <h2>Explain it to a partner</h2>
+      <p class="sub">Use the sentence starters, then swap roles. <span class="pill" style="margin-left:6px;">60 SECONDS</span></p>
+      <ul class="clean">
+        <li>“The Design Cycle is a cycle because…”</li>
+        <li>“Decomposition would help with this problem by…”</li>
+        <li>“An abstraction of this product could leave out…”</li>
+        <li>“A strong test would measure…”</li>
+        <li>“If the test fails, the next design move is…”</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 16. EXIT CHALLENGE ============ -->
+  <section class="page" data-title="Exit challenge">
+    <div class="card">
+      <div class="eyebrow">Exit challenge</div>
+      <h2>One final idea to remember</h2>
+      <ul class="clean">
+        <li>Designers do not guess once; they build knowledge through <b>cycles of evidence</b>.</li>
+        <li>Computational thinkers make complexity manageable by <b>structuring problems</b>.</li>
+        <li>The strongest solution is not always the most complex — it is the one that <b>meets the user’s needs and criteria</b>.</li>
+        <li>Your task: <b>show your thinking</b>, not only your final product.</li>
+      </ul>
+      <div class="loop">SHOW YOUR THINKING</div>
+    </div>
+  </section>
+
+  <!-- ============ 17. STARTUP BRIEF ============ -->
+  <section class="page" data-theme="drone" data-title="Startup brief">
+    <div class="card">
+      <div class="drone-banner"><span class="icon">🚁</span> DroneMed Labs — Startup Simulation</div>
+      <h2>Your mission: design a Drone Medicine Delivery System</h2>
+      <p class="sub">You have just joined a startup. Your team must design a drone system that delivers medicine to people who cannot get to a pharmacy.</p>
+      <ul class="clean">
+        <li><b>Inquiring:</b> define the user delivery needs.</li>
+        <li><b>Decomposition:</b> break the flight into clear steps.</li>
+        <li><b>Algorithms:</b> write precise, repeatable flight instructions.</li>
+        <li><b>Evaluating:</b> test your thinking against real-world problems.</li>
+      </ul>
+      <p class="tip" style="margin-top:22px;">
+        You will complete <b>four separate pages</b> — one for each phase. Type your answers directly in the boxes.
+        Your work saves automatically, and at the end you can review and download your design log.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 18. INQUIRING ============ -->
+  <section class="page drone-page" data-theme="drone" data-title="Phase 1 — Inquiring">
+    <div class="card">
+      <div class="drone-banner"><span class="icon">🔍</span> Phase 1 · Inquiring</div>
+      <div class="eyebrow">Stage A — Inquiring and analysing</div>
+      <h2>Define the user delivery needs</h2>
+      <p class="sub"><b>PROBLEM:</b> There are people that need medicine but can’t go to the pharmacy.</p>
+
+      <div class="field">
+        <label for="q1">1. What is the problem and who is affected?</label>
+        <div class="hint">Think like a detective: WHO has the problem, and WHY does it matter?</div>
+        <textarea id="q1" data-key="q1" placeholder="The problem is… The people affected are…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+
+      <div class="field">
+        <label for="q2">2. How can a drone solve this problem?</label>
+        <div class="hint">Explain how flying delivery removes the barrier the user has.</div>
+        <textarea id="q2" data-key="q2" placeholder="A drone can…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+
+      <div class="field">
+        <label for="q3">3. What should be the payload of the drone?</label>
+        <div class="hint">Give a measurement (for example in kg) and justify it with evidence about medicine.</div>
+        <textarea id="q3" data-key="q3" placeholder="The payload should be… because…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 19. DECOMPOSITION ============ -->
+  <section class="page drone-page" data-theme="drone" data-title="Phase 2 — Decomposition">
+    <div class="card">
+      <div class="drone-banner"><span class="icon">🧩</span> Phase 2 · Decomposition</div>
+      <div class="eyebrow">Break the big problem into smaller parts</div>
+      <h2>Break down the flight</h2>
+      <p class="sub">Write the steps the drone must follow to fly from the base to the home and back, avoiding obstacles.</p>
+
+      <div class="field">
+        <label for="q4">4. Break down the flight, drop-off and return steps.</label>
+        <div class="hint">Structure your answer in three parts: <b>FLIGHT</b> (base → home, avoiding obstacles), <b>DROP-OFF</b> (delivering the medicine), <b>RETURN</b> (home → base).</div>
+        <textarea id="q4" data-key="q4" style="min-height:200px" placeholder="FLIGHT: 1… 2… 3…&#10;DROP-OFF: 1… 2… 3…&#10;RETURN: 1… 2… 3…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 20. ALGORITHMS ============ -->
+  <section class="page drone-page" data-theme="drone" data-title="Phase 3 — Algorithms">
+    <div class="card">
+      <div class="drone-banner"><span class="icon">⚙️</span> Phase 3 · Algorithms</div>
+      <div class="eyebrow">Precise, repeatable instructions</div>
+      <h2>Write flight instructions a machine can follow</h2>
+      <p class="sub">Instructions must be simple so the machine (the drone) can understand them.</p>
+
+      <div class="field">
+        <label for="q5">5. Write the drone’s flight algorithm.</label>
+        <div class="hint">
+          Use numbered steps. Try to include <b>sequence</b> (order), <b>selection</b> (IF… THEN… ELSE…) and <b>iteration</b> (REPEAT until…).
+        </div>
+        <textarea id="q5" data-key="q5" style="min-height:220px" placeholder="1. START at base.&#10;2. LOAD medicine package.&#10;3. IF battery &lt; 80% THEN…&#10;4. FLY to coordinates…&#10;5. REPEAT scan for obstacles until…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 21. EVALUATING ============ -->
+  <section class="page drone-page" data-theme="drone" data-title="Phase 4 — Evaluating">
+    <div class="card">
+      <div class="drone-banner"><span class="icon">🧪</span> Phase 4 · Evaluating</div>
+      <div class="eyebrow">Stage D — Evaluating</div>
+      <h2>Test your thinking against reality</h2>
+      <p class="sub">Evaluation is evidence-based judgement, not “I like it”.</p>
+
+      <div class="field">
+        <label for="q6">6. Do you think your drone will work fine in every situation?</label>
+        <div class="hint">Explain your reasoning and give at least one situation where it might fail.</div>
+        <textarea id="q6" data-key="q6" placeholder="Yes / No, because…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+
+      <div class="field">
+        <label for="q7">7. What will happen with your drone if there is a strong wind?</label>
+        <div class="hint">Think about stability, battery use, timing, and the safety of the medicine.</div>
+        <textarea id="q7" data-key="q7" placeholder="In strong wind, the drone would…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+
+      <div class="field">
+        <label for="q8">8. What will happen with your drone if, in the middle of the path, it reaches less than 5% battery?</label>
+        <div class="hint">Use IF… THEN… ELSE… thinking. What is the safest decision?</div>
+        <textarea id="q8" data-key="q8" placeholder="IF battery &lt; 5% THEN…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+
+      <div class="field">
+        <label for="q9">9. What is the impact on the users of your drone delivery system?</label>
+        <div class="hint">Consider positive impacts and possible negative impacts.</div>
+        <textarea id="q9" data-key="q9" placeholder="The impact on users would be…"></textarea>
+        <div class="counter">0 words</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 22. REVIEW ============ -->
+  <section class="page" data-theme="drone" data-title="Review your design log">
+    <div class="card">
+      <div class="drone-banner"><span class="icon">📋</span> Design log — review &amp; submit</div>
+      <h2>Here is your thinking, all in one place</h2>
+      <p class="sub">Check your answers, go back to improve anything, then download or print your design log.</p>
+      <div id="reviewOutput"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnDownload">⬇ Download my design log</button>
+        <button class="btn btn-ghost" id="btnPrint">🖨 Print / Save as PDF</button>
+      </div>
+      <p class="tip" style="margin-top:20px;">Remember: the strongest solution is not always the most complex — it is the one that meets the user’s needs and criteria. <b>Show your thinking.</b></p>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<div class="navbar">
+  <div class="nav-inner">
+    <button class="btn btn-ghost" id="btnPrev">← Back</button>
+    <div class="nav-mid" id="navMid">Page 1 of 22</div>
+    <button class="btn btn-primary" id="btnNext">Next →</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var total = pages.length;
+  var current = 0;
+
+  var stepLabel   = document.getElementById('stepLabel');
+  var progressFill= document.getElementById('progressFill');
+  var btnPrev     = document.getElementById('btnPrev');
+  var btnNext     = document.getElementById('btnNext');
+  var navMid      = document.getElementById('navMid');
+  var reviewOut   = document.getElementById('reviewOutput');
+
+  var STORAGE_KEY = 'myp2-drone-design-answers';
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; }
+  catch(e){ saved = {}; }
+
+  /* ---------- textareas: restore, autosave, counters ---------- */
+  var textareas = Array.prototype.slice.call(document.querySelectorAll('textarea[data-key]'));
+
+  function updateCounter(ta){
+    var counter = ta.parentElement.querySelector('.counter');
+    if(!counter) return;
+    var v = ta.value.trim();
+    var words = v ? v.split(/\s+/).length : 0;
+    counter.textContent = words + (words === 1 ? ' word' : ' words');
+  }
+
+  textareas.forEach(function(ta){
+    var key = ta.dataset.key;
+    if(saved[key]) { ta.value = saved[key]; }
+    updateCounter(ta);
+
+    ta.addEventListener('input', function(){
+      saved[key] = ta.value;
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch(e){}
+      updateCounter(ta);
+    });
+  });
+
+  /* ---------- review builder ---------- */
+  function escapeHtml(str){
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+              .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function buildReview(){
+    var fields = Array.prototype.slice.call(document.querySelectorAll('.drone-page .field'));
+    var html = '';
+    fields.forEach(function(f){
+      var labelEl = f.querySelector('label');
+      var ta = f.querySelector('textarea');
+      var label = labelEl ? labelEl.textContent.trim() : '';
+      var val = ta ? ta.value.trim() : '';
+      html += '<div class="rev-item">';
+      html += '<div class="rev-q">' + escapeHtml(label) + '</div>';
+      if(val){
+        html += '<div class="rev-a">' + escapeHtml(val).replace(/\n/g,'<br>') + '</div>';
+      } else {
+        html += '<div class="rev-a"><em>Not answered yet — go back and add your thinking.</em></div>';
+      }
+      html += '</div>';
+    });
+    reviewOut.innerHTML = html;
+  }
+
+  /* ---------- navigation ---------- */
+  function show(i){
+    current = Math.max(0, Math.min(total - 1, i));
+
+    pages.forEach(function(p, idx){
+      p.classList.toggle('active', idx === current);
+    });
+
+    document.body.dataset.theme = pages[current].dataset.theme || 'design';
+    stepLabel.textContent = pages[current].dataset.title || '';
+    progressFill.style.width = ((current + 1) / total * 100) + '%';
+    navMid.textContent = 'Page ' + (current + 1) + ' of ' + total;
+
+    btnPrev.disabled = (current === 0);
+    btnNext.disabled = (current === total - 1);
+
+    if(current === total - 1){ buildReview(); }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  btnPrev.addEventListener('click', function(){ show(current - 1); });
+  btnNext.addEventListener('click', function(){ show(current + 1); });
+
+  document.addEventListener('keydown', function(e){
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if(tag === 'TEXTAREA' || tag === 'INPUT') return;
+    if(e.key === 'ArrowRight'){ show(current + 1); }
+    if(e.key === 'ArrowLeft'){ show(current - 1); }
+  });
+
+  /* ---------- download & print ---------- */
+  document.getElementById('btnDownload').addEventListener('click', function(){
+    var text = 'DRONE MEDICINE DELIVERY SYSTEM — DESIGN LOG\n';
+    text += '============================================\n\n';
+    var fields = Array.prototype.slice.call(document.querySelectorAll('.drone-page .field'));
+    fields.forEach(function(f){
+      var label = f.querySelector('label').textContent.trim();
+      var val = f.querySelector('textarea').value.trim() || '(not answered)';
+      text += label + '\n';
+      text += '--------------------------------------------\n';
+      text += val + '\n\n';
+    });
+    var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'drone-design-log.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', function(){
+    buildReview();
+    window.print();
+  });
+
+  /* ---------- init ---------- */
+  show(0);
+})();
+</script>
+</body>
+</html>
