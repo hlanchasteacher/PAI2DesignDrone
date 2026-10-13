@@ -269,9 +269,17 @@
   .submit-callout li{margin-bottom:7px;line-height:1.55;font-size:.93rem;}
   .submit-callout li:last-child{margin-bottom:0;}
 
-  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;align-items:center;}
 
-  .print-only{display:none;}
+  .btn-big{
+    font-size:1.02rem;padding:17px 38px;
+    box-shadow:0 10px 26px rgba(13,148,136,.35);
+  }
+  .btn-big:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 32px rgba(13,148,136,.42);}
+
+  .save-note{
+    font-size:.82rem;color:var(--muted);margin-top:14px;line-height:1.55;
+  }
 
   /* ---------- NAV BAR ---------- */
   .navbar{
@@ -299,7 +307,7 @@
   .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(79,70,229,.34);}
   .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink);}
   .btn-ghost:hover:not(:disabled){border-color:var(--primary);color:var(--primary);}
-  .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
   .nav-mid{
     margin:0 auto;font-size:.8rem;color:var(--muted);font-weight:800;
     letter-spacing:.04em;white-space:nowrap;
@@ -312,6 +320,7 @@
     .step-label{display:none;}
     .nav-mid{font-size:.72rem;}
     .btn{padding:11px 18px;font-size:.84rem;}
+    .btn-big{padding:15px 26px;font-size:.95rem;width:100%;}
     .mcq{padding:16px 16px;}
     main{padding-bottom:210px;}
     .nav-lock{font-size:.76rem;}
@@ -324,12 +333,7 @@
     .page.active{display:block !important;}
     .card{box-shadow:none;border:none;padding:0;}
     .btn-row{display:none !important;}
-    .print-only{display:block !important;}
     body{background:#fff !important;}
-    .drone-banner{
-      background:#fff !important;color:#0f766e !important;
-      border:2px solid #0f766e;
-    }
     .rev-item{page-break-inside:avoid;border-left-color:#0f766e;}
     .log-heading{border-bottom-color:#cbd5e1;color:#0f766e;}
     .mcq{display:none !important;}
@@ -807,7 +811,7 @@
     </div>
   </section>
 
-  <!-- ============ 19. QUICK CHECK (with text boxes) ============ -->
+  <!-- ============ 19. QUICK CHECK ============ -->
   <section class="page" data-title="Quick check">
     <div class="card">
       <div class="eyebrow">Quick check</div>
@@ -875,7 +879,7 @@
       </ul>
       <p class="tip" style="margin-top:22px;">
         You will complete <b>four separate pages</b> — one for each phase. Type your answers directly in the boxes.
-        Your work saves automatically, and at the end you will save your design log as a PDF.
+        Your work saves automatically, and at the end you will download your design log as a PDF.
       </p>
     </div>
   </section>
@@ -985,31 +989,31 @@
     </div>
   </section>
 
-  <!-- ============ 26. REVIEW + SUBMIT ============ -->
-  <section class="page" data-theme="drone" data-title="Review &amp; submit">
+  <!-- ============ 26. REVIEW + DOWNLOAD ============ -->
+  <section class="page" data-theme="drone" data-title="Review &amp; download">
     <div class="card">
-
-      <!-- Print-only header -->
-      <div class="print-only">
-        <h1>Drone Medicine Delivery System</h1>
-        <p><b>MYP2 · Design Cycle + Computational Thinking — Design Log</b></p>
-        <hr>
-      </div>
-
-      <div class="drone-banner no-print"><span class="icon">📋</span> Design log — review &amp; submit</div>
-      <h2 class="no-print">Your complete design log</h2>
-      <p class="sub no-print">
-        Check your answers below. When you are ready, save this page as a PDF and upload it to the Toddle assignment.
+      <div class="drone-banner"><span class="icon">📥</span> Design log — review &amp; download</div>
+      <h2>Your complete design log</h2>
+      <p class="sub">
+        Check your answers below. When you are ready, press the button once — your PDF will download automatically.
       </p>
 
-      <div class="submit-callout no-print">
-        <div class="sc-title">📤 Submit on Toddle</div>
+      <div class="submit-callout">
+        <div class="sc-title">📤 How to submit on Toddle</div>
         <ol>
-          <li>Click <b>Print / Save as PDF</b> below.</li>
-          <li>In the print dialog, set the destination to <b>“Save as PDF”</b> and save the file to your device.</li>
+          <li>Press <b>Download my PDF</b> below.</li>
+          <li>The file <b>Drone-Medicine-Delivery-Design-Log.pdf</b> saves to your <b>Downloads</b> folder automatically.</li>
           <li>Upload that PDF file to the <b>Toddle assignment</b>.</li>
         </ol>
       </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary btn-big" id="btnDownloadPdf">⬇ Download my PDF</button>
+        <button class="btn btn-ghost" id="btnReset">↺ Clear all my answers</button>
+      </div>
+      <p class="save-note">
+        Tip: if nothing seems to happen, check your browser’s <b>Downloads</b> (or the downloads icon in the address bar) — the file may already be there.
+      </p>
 
       <h3 class="log-heading">Part 1 · Drone Medicine Delivery System</h3>
       <div id="reviewOutput"></div>
@@ -1017,12 +1021,7 @@
       <h3 class="log-heading">Part 2 · Understanding checks — multiple-choice trials</h3>
       <div id="mcqSummary"></div>
 
-      <div class="btn-row no-print">
-        <button class="btn btn-primary" id="btnPrint">🖨 Print / Save as PDF</button>
-        <button class="btn btn-ghost" id="btnReset">↺ Clear all my answers</button>
-      </div>
-
-      <p class="tip no-print" style="margin-top:20px;">
+      <p class="tip" style="margin-top:20px;">
         Remember: the strongest solution is not always the most complex — it is the one that meets the user’s needs and criteria. <b>Show your thinking.</b>
       </p>
     </div>
@@ -1042,11 +1041,14 @@
   </div>
 </div>
 
+<!-- jsPDF library for direct PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
 (function(){
   "use strict";
 
-  var MIN_CHARS = 5; /* minimum characters for a written answer to count as done */
+  var MIN_CHARS = 5;
 
   var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
   var total = pages.length;
@@ -1089,7 +1091,7 @@
   }
 
   /* =========================================================
-     GATE LOGIC — has the activity on this page been finished?
+     GATE LOGIC
      ========================================================= */
   function pageStatus(page){
     var tas  = Array.prototype.slice.call(page.querySelectorAll('textarea[data-key]'));
@@ -1143,7 +1145,6 @@
     var st = pageStatus(page);
     paintFieldHints(page);
 
-    /* last page: nothing to advance to */
     if(current === total - 1){
       btnNext.disabled = true;
       navMid.textContent = 'Page ' + (current + 1) + ' of ' + total;
@@ -1165,7 +1166,7 @@
   }
 
   /* =========================================================
-     TEXTAREAS — restore, autosave, counters, gate refresh
+     TEXTAREAS
      ========================================================= */
   var textareas = Array.prototype.slice.call(document.querySelectorAll('textarea[data-key]'));
 
@@ -1191,7 +1192,7 @@
   });
 
   /* =========================================================
-     MULTIPLE CHOICE — one attempt recorded per click
+     MULTIPLE CHOICE
      ========================================================= */
   var mcqBlocks = Array.prototype.slice.call(document.querySelectorAll('.mcq'));
 
@@ -1247,7 +1248,7 @@
         var s = getState();
         if(s.solved) return;
 
-        s.attempts += 1;                 /* record the trial */
+        s.attempts += 1;
 
         if(i === correctIndex){
           s.solved = true;
@@ -1264,10 +1265,9 @@
   });
 
   /* =========================================================
-     REVIEW BUILDERS
+     HTML REVIEW
      ========================================================= */
   function buildReview(){
-    /* ---- Part 1: drone design log ---- */
     var fields = Array.prototype.slice.call(document.querySelectorAll('.drone-page .field'));
     var html = '';
     fields.forEach(function(f){
@@ -1286,7 +1286,6 @@
     });
     reviewOut.innerHTML = html;
 
-    /* ---- Part 2: multiple-choice trials ---- */
     var sum = '';
     var totalAttempts = 0;
     var solvedCount = 0;
@@ -1320,6 +1319,169 @@
           (totalAttempts === 1 ? '' : 's') + ' recorded.</div></div>' + sum;
 
     mcqSummary.innerHTML = sum;
+  }
+
+  /* =========================================================
+     DIRECT PDF GENERATION (jsPDF)
+     ========================================================= */
+  function buildPDF(){
+    var jsPDFctor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+    if(!jsPDFctor){
+      throw new Error('jsPDF not available');
+    }
+
+    var doc = new jsPDFctor({ unit:'pt', format:'a4' });
+    var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
+    var M = 50;
+    var maxW = pageW - M * 2;
+    var bottomLimit = pageH - M - 26;
+    var y = M;
+
+    function newPageIfNeeded(h){
+      if(y + h > bottomLimit){
+        doc.addPage();
+        y = M;
+      }
+    }
+
+    function write(text, opts){
+      opts = opts || {};
+      var size   = opts.size   || 10.5;
+      var style  = opts.style  || 'normal';
+      var color  = opts.color  || [30,41,59];
+      var indent = opts.indent || 0;
+      var before = opts.before || 0;
+      var after  = opts.after  || 6;
+      var lineH  = size * 1.45;
+
+      doc.setFont('helvetica', style);
+      doc.setFontSize(size);
+      doc.setTextColor(color[0], color[1], color[2]);
+
+      var lines = doc.splitTextToSize(String(text == null ? '' : text), maxW - indent);
+      if(!lines || !lines.length) lines = [''];
+
+      y += before;
+
+      for(var i = 0; i < lines.length; i++){
+        newPageIfNeeded(lineH);
+        doc.text(lines[i], M + indent, y + lineH * 0.72);
+        y += lineH;
+      }
+
+      y += after;
+    }
+
+    function sectionHeading(text){
+      newPageIfNeeded(46);
+      y += 10;
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(13);
+      doc.setTextColor(15,118,110);
+      doc.text(text, M, y + 12);
+      y += 18;
+      doc.setDrawColor(15,118,110);
+      doc.setLineWidth(1.2);
+      doc.line(M, y, pageW - M, y);
+      y += 14;
+    }
+
+    /* ===== HEADER BANNER ===== */
+    doc.setFillColor(15,118,110);
+    doc.rect(0, 0, pageW, 98, 'F');
+
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(19);
+    doc.text('Drone Medicine Delivery System', M, 46);
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10.5);
+    doc.text('MYP2 · Design Cycle + Computational Thinking — Design Log', M, 70);
+
+    var today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+    doc.setFontSize(10);
+    doc.text(today, pageW - M, 70, { align:'right' });
+
+    y = 98 + 30;
+
+    /* ===== PART 1 ===== */
+    sectionHeading('Part 1 · Drone Medicine Delivery System');
+
+    var droneFields = Array.prototype.slice.call(document.querySelectorAll('.drone-page .field'));
+    droneFields.forEach(function(f){
+      var labelEl = f.querySelector('label');
+      var ta = f.querySelector('textarea');
+      var label = labelEl ? labelEl.textContent.trim() : '';
+      var val = ta ? ta.value.trim() : '';
+
+      write(label, { style:'bold', size:10.5, color:[15,23,42], before:10, after:3 });
+
+      if(val){
+        write(val, { size:10, color:[51,65,85], indent:12, after:9 });
+      } else {
+        write('Not answered.', { size:10, style:'italic', color:[148,163,184], indent:12, after:9 });
+      }
+    });
+
+    /* ===== PART 2 ===== */
+    doc.addPage();
+    y = M;
+
+    sectionHeading('Part 2 · Understanding checks — multiple-choice trials');
+
+    var totalAttempts = 0;
+    var solvedCount = 0;
+    mcqBlocks.forEach(function(block){
+      var s = mcqState[block.dataset.qid] || { attempts:0, solved:false };
+      totalAttempts += s.attempts || 0;
+      if(s.solved) solvedCount += 1;
+    });
+
+    write(
+      'Summary: ' + solvedCount + ' of ' + mcqBlocks.length +
+      ' questions solved · ' + totalAttempts + ' total attempt' +
+      (totalAttempts === 1 ? '' : 's') + ' recorded.',
+      { style:'bold', size:10.5, color:[14,116,144], before:4, after:14 }
+    );
+
+    mcqBlocks.forEach(function(block){
+      var label = block.dataset.label || block.dataset.qid;
+      var s = mcqState[block.dataset.qid] || { attempts:0, solved:false };
+
+      write(label, { style:'bold', size:10.5, color:[15,23,42], before:8, after:3 });
+
+      var statusLine;
+      var color;
+      if(s.solved){
+        statusLine = 'Solved — ' + (s.attempts || 0) + ' attempt' +
+                     ((s.attempts === 1) ? '' : 's') + ' recorded.';
+        color = [4,120,87];
+      } else if((s.attempts || 0) > 0){
+        statusLine = 'Not solved yet — ' + s.attempts + ' attempt' +
+                     ((s.attempts === 1) ? '' : 's') + ' recorded.';
+        color = [185,28,28];
+      } else {
+        statusLine = 'No attempts yet.';
+        color = [100,116,139];
+      }
+
+      write(statusLine, { size:10, color:color, indent:12, after:9 });
+    });
+
+    /* ===== FOOTERS ===== */
+    var pageCount = doc.internal.getNumberOfPages();
+    for(var p = 1; p <= pageCount; p++){
+      doc.setPage(p);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(148,163,184);
+      doc.text('Drone Medicine Delivery System — MYP2 Design Log', M, pageH - 22);
+      doc.text('Page ' + p + ' of ' + pageCount, pageW - M, pageH - 22, { align:'right' });
+    }
+
+    doc.save('Drone-Medicine-Delivery-Design-Log.pdf');
   }
 
   /* =========================================================
@@ -1359,13 +1521,38 @@
   });
 
   /* =========================================================
-     PRINT / RESET
+     DOWNLOAD BUTTON
      ========================================================= */
-  document.getElementById('btnPrint').addEventListener('click', function(){
-    buildReview();
-    window.print();
+  document.getElementById('btnDownloadPdf').addEventListener('click', function(){
+    var btn = this;
+    var originalHTML = btn.innerHTML;
+
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Building your PDF…';
+
+    /* let the UI repaint before the (blocking) PDF work */
+    setTimeout(function(){
+      buildReview();
+
+      try {
+        buildPDF();
+      } catch(err){
+        console.error(err);
+        alert(
+          'Sorry — the PDF could not be created automatically.\n\n' +
+          'The print window will open instead. Choose "Save as PDF" as the destination.'
+        );
+        window.print();
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+    }, 80);
   });
 
+  /* =========================================================
+     RESET
+     ========================================================= */
   document.getElementById('btnReset').addEventListener('click', function(){
     if(!window.confirm('This will erase all your written answers AND all your quiz attempts. Continue?')) return;
     try {
