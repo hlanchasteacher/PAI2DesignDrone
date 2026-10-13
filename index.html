@@ -74,7 +74,7 @@
   }
 
   /* ---------- LAYOUT ---------- */
-  main{flex:1;display:flex;justify-content:center;padding:30px 20px 130px;}
+  main{flex:1;display:flex;justify-content:center;padding:30px 20px 190px;}
   .stage{width:100%;max-width:900px;}
   .page{display:none;}
   .page.active{display:block;animation:fade .35s ease;}
@@ -240,6 +240,8 @@
     outline:none;border-color:var(--primary);background:#fff;
     box-shadow:0 0 0 4px var(--soft);
   }
+  textarea.needs-answer{border-color:#fcd34d;background:#fffdf5;}
+  textarea.needs-answer:focus{border-color:var(--primary);background:#fff;}
   .counter{font-size:.74rem;color:var(--muted);text-align:right;margin-top:6px;font-weight:600;}
 
   .rev-item{
@@ -250,15 +252,42 @@
   .rev-a{font-size:.94rem;line-height:1.65;color:#334155;white-space:pre-wrap;}
   .rev-a em{color:#94a3b8;}
 
-  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;}
+  .log-heading{
+    font-size:1.05rem;margin:32px 0 16px;padding-bottom:8px;
+    border-bottom:2px solid var(--line);color:var(--primary-dark);
+  }
+
+  .submit-callout{
+    background:#ecfeff;border:1.5px solid #a5f3fc;border-radius:16px;
+    padding:18px 22px;margin:22px 0 6px;
+  }
+  .submit-callout .sc-title{
+    font-weight:800;color:#0e7490;margin-bottom:10px;font-size:1rem;
+    letter-spacing:.02em;
+  }
+  .submit-callout ol{margin:0;padding-left:22px;}
+  .submit-callout li{margin-bottom:7px;line-height:1.55;font-size:.93rem;}
+  .submit-callout li:last-child{margin-bottom:0;}
+
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;}
+
+  .print-only{display:none;}
 
   /* ---------- NAV BAR ---------- */
   .navbar{
     position:fixed;bottom:0;left:0;right:0;z-index:30;
     background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
-    border-top:1px solid var(--line);padding:12px 20px;
+    border-top:1px solid var(--line);padding:10px 20px;
   }
-  .nav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+  .nav-wrap{max-width:900px;margin:0 auto;}
+  .nav-lock{
+    font-size:.82rem;font-weight:700;color:#92400e;
+    background:#fffbeb;border:1px solid #fde68a;
+    padding:9px 15px;border-radius:12px;text-align:center;
+    margin-bottom:10px;line-height:1.45;
+  }
+  .nav-lock[hidden]{display:none;}
+  .nav-inner{display:flex;align-items:center;gap:12px;}
   .btn{
     border:none;cursor:pointer;font:inherit;font-weight:800;font-size:.9rem;
     padding:12px 24px;border-radius:999px;transition:.2s;
@@ -284,15 +313,26 @@
     .nav-mid{font-size:.72rem;}
     .btn{padding:11px 18px;font-size:.84rem;}
     .mcq{padding:16px 16px;}
+    main{padding-bottom:210px;}
+    .nav-lock{font-size:.76rem;}
   }
 
   @media print{
-    header,.navbar{display:none !important;}
-    main{padding:0;}
+    header,.navbar,.no-print{display:none !important;}
+    main{padding:0 !important;}
     .page{display:none !important;}
     .page.active{display:block !important;}
     .card{box-shadow:none;border:none;padding:0;}
-    .btn-row{display:none;}
+    .btn-row{display:none !important;}
+    .print-only{display:block !important;}
+    body{background:#fff !important;}
+    .drone-banner{
+      background:#fff !important;color:#0f766e !important;
+      border:2px solid #0f766e;
+    }
+    .rev-item{page-break-inside:avoid;border-left-color:#0f766e;}
+    .log-heading{border-bottom-color:#cbd5e1;color:#0f766e;}
+    .mcq{display:none !important;}
   }
 </style>
 </head>
@@ -324,7 +364,11 @@
         <span>MAKE</span><i>→</i>
         <span>IMPROVE</span>
       </div>
-      <p class="tip">Use <b>Next</b> and <b>Back</b> below — or your ← → arrow keys — to move through the lesson. Your answers and quiz attempts are saved automatically.</p>
+      <p class="tip">
+        Use <b>Next</b> and <b>Back</b> below — or your ← → arrow keys — to move through the lesson.
+        Your answers and quiz attempts save automatically.<br>
+        <b>Next is locked until you finish the activity on a page.</b>
+      </p>
     </div>
   </section>
 
@@ -768,7 +812,7 @@
     <div class="card">
       <div class="eyebrow">Quick check</div>
       <h2>Explain it to a partner</h2>
-      <p class="sub">Use the sentence starters below to write your explanation. Be specific and use examples from today.</p>
+      <p class="sub">Use the sentence starters below to write your explanation. Be specific and use examples from today. Complete all five to continue.</p>
 
       <div class="field">
         <label for="qc1">“The Design Cycle is a cycle because…”</label>
@@ -831,7 +875,7 @@
       </ul>
       <p class="tip" style="margin-top:22px;">
         You will complete <b>four separate pages</b> — one for each phase. Type your answers directly in the boxes.
-        Your work saves automatically, and at the end you can review and download your design log.
+        Your work saves automatically, and at the end you will save your design log as a PDF.
       </p>
     </div>
   </section>
@@ -941,26 +985,46 @@
     </div>
   </section>
 
-  <!-- ============ 26. REVIEW ============ -->
-  <section class="page" data-theme="drone" data-title="Review your design log">
+  <!-- ============ 26. REVIEW + SUBMIT ============ -->
+  <section class="page" data-theme="drone" data-title="Review &amp; submit">
     <div class="card">
-      <div class="drone-banner"><span class="icon">📋</span> Design log — review &amp; submit</div>
-      <h2>Here is your thinking, all in one place</h2>
-      <p class="sub">Check your answers, go back to improve anything, then download or print your design log.</p>
+
+      <!-- Print-only header -->
+      <div class="print-only">
+        <h1>Drone Medicine Delivery System</h1>
+        <p><b>MYP2 · Design Cycle + Computational Thinking — Design Log</b></p>
+        <hr>
+      </div>
+
+      <div class="drone-banner no-print"><span class="icon">📋</span> Design log — review &amp; submit</div>
+      <h2 class="no-print">Your complete design log</h2>
+      <p class="sub no-print">
+        Check your answers below. When you are ready, save this page as a PDF and upload it to the Toddle assignment.
+      </p>
+
+      <div class="submit-callout no-print">
+        <div class="sc-title">📤 Submit on Toddle</div>
+        <ol>
+          <li>Click <b>Print / Save as PDF</b> below.</li>
+          <li>In the print dialog, set the destination to <b>“Save as PDF”</b> and save the file to your device.</li>
+          <li>Upload that PDF file to the <b>Toddle assignment</b>.</li>
+        </ol>
+      </div>
+
+      <h3 class="log-heading">Part 1 · Drone Medicine Delivery System</h3>
       <div id="reviewOutput"></div>
-      <div class="btn-row">
-        <button class="btn btn-primary" id="btnDownload">⬇ Download my design log</button>
-        <button class="btn btn-ghost" id="btnPrint">🖨 Print / Save as PDF</button>
+
+      <h3 class="log-heading">Part 2 · Understanding checks — multiple-choice trials</h3>
+      <div id="mcqSummary"></div>
+
+      <div class="btn-row no-print">
+        <button class="btn btn-primary" id="btnPrint">🖨 Print / Save as PDF</button>
         <button class="btn btn-ghost" id="btnReset">↺ Clear all my answers</button>
       </div>
-      <p class="tip" style="margin-top:20px;">Remember: the strongest solution is not always the most complex — it is the one that meets the user’s needs and criteria. <b>Show your thinking.</b></p>
-    </div>
 
-    <div class="card">
-      <div class="eyebrow">Understanding checks</div>
-      <h2>Your multiple-choice trials</h2>
-      <p class="sub">Every attempt is recorded. Mistakes are information, not failure.</p>
-      <div id="mcqSummary"></div>
+      <p class="tip no-print" style="margin-top:20px;">
+        Remember: the strongest solution is not always the most complex — it is the one that meets the user’s needs and criteria. <b>Show your thinking.</b>
+      </p>
     </div>
   </section>
 
@@ -968,16 +1032,21 @@
 </main>
 
 <div class="navbar">
-  <div class="nav-inner">
-    <button class="btn btn-ghost" id="btnPrev">← Back</button>
-    <div class="nav-mid" id="navMid">Page 1 of 26</div>
-    <button class="btn btn-primary" id="btnNext">Next →</button>
+  <div class="nav-wrap">
+    <div class="nav-lock" id="navLock" hidden></div>
+    <div class="nav-inner">
+      <button class="btn btn-ghost" id="btnPrev">← Back</button>
+      <div class="nav-mid" id="navMid">Page 1 of 26</div>
+      <button class="btn btn-primary" id="btnNext">Next →</button>
+    </div>
   </div>
 </div>
 
 <script>
 (function(){
   "use strict";
+
+  var MIN_CHARS = 5; /* minimum characters for a written answer to count as done */
 
   var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
   var total = pages.length;
@@ -988,6 +1057,7 @@
   var btnPrev      = document.getElementById('btnPrev');
   var btnNext      = document.getElementById('btnNext');
   var navMid       = document.getElementById('navMid');
+  var navLock      = document.getElementById('navLock');
   var reviewOut    = document.getElementById('reviewOutput');
   var mcqSummary   = document.getElementById('mcqSummary');
 
@@ -1003,7 +1073,99 @@
   catch(e){ mcqState = {}; }
 
   /* =========================================================
-     TEXTAREAS — restore, autosave, word counters
+     HELPERS
+     ========================================================= */
+  function escapeHtml(str){
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function saveAnswers(){
+    try { localStorage.setItem(ANSWER_KEY, JSON.stringify(saved)); } catch(e){}
+  }
+  function saveMcq(){
+    try { localStorage.setItem(MCQ_KEY, JSON.stringify(mcqState)); } catch(e){}
+  }
+
+  /* =========================================================
+     GATE LOGIC — has the activity on this page been finished?
+     ========================================================= */
+  function pageStatus(page){
+    var tas  = Array.prototype.slice.call(page.querySelectorAll('textarea[data-key]'));
+    var mcqs = Array.prototype.slice.call(page.querySelectorAll('.mcq'));
+
+    var taDone = 0;
+    tas.forEach(function(ta){
+      if(ta.value.trim().length >= MIN_CHARS) taDone++;
+    });
+
+    var mcqDone = 0;
+    mcqs.forEach(function(b){
+      var s = mcqState[b.dataset.qid];
+      if(s && s.solved) mcqDone++;
+    });
+
+    return {
+      taTotal: tas.length,
+      taDone:  taDone,
+      mcqTotal: mcqs.length,
+      mcqDone:  mcqDone,
+      complete: (taDone === tas.length) && (mcqDone === mcqs.length)
+    };
+  }
+
+  function buildLockMessage(st){
+    var bits = [];
+    if(st.mcqTotal > 0 && st.mcqDone < st.mcqTotal){
+      bits.push(st.mcqTotal === 1
+        ? 'answer the check question correctly'
+        : 'answer all ' + st.mcqTotal + ' check questions correctly');
+    }
+    if(st.taTotal > 0 && st.taDone < st.taTotal){
+      bits.push('fill in all ' + st.taTotal + ' answer boxes (' + st.taDone + '/' + st.taTotal + ' done)');
+    }
+    if(bits.length === 0) return '';
+    return '🔒 To unlock Next: ' + bits.join(' and ') + '.';
+  }
+
+  function paintFieldHints(page){
+    var tas = page.querySelectorAll('textarea[data-key]');
+    Array.prototype.forEach.call(tas, function(ta){
+      ta.classList.toggle('needs-answer', ta.value.trim().length < MIN_CHARS);
+    });
+  }
+
+  function refreshGate(){
+    var page = pages[current];
+    if(!page) return;
+
+    var st = pageStatus(page);
+    paintFieldHints(page);
+
+    /* last page: nothing to advance to */
+    if(current === total - 1){
+      btnNext.disabled = true;
+      navMid.textContent = 'Page ' + (current + 1) + ' of ' + total;
+      navLock.hidden = true;
+      return;
+    }
+
+    navMid.textContent = 'Page ' + (current + 1) + ' of ' + total;
+
+    if(st.complete){
+      btnNext.disabled = false;
+      navLock.hidden = true;
+      navLock.textContent = '';
+    } else {
+      btnNext.disabled = true;
+      navLock.hidden = false;
+      navLock.textContent = buildLockMessage(st);
+    }
+  }
+
+  /* =========================================================
+     TEXTAREAS — restore, autosave, counters, gate refresh
      ========================================================= */
   var textareas = Array.prototype.slice.call(document.querySelectorAll('textarea[data-key]'));
 
@@ -1022,8 +1184,9 @@
 
     ta.addEventListener('input', function(){
       saved[key] = ta.value;
-      try { localStorage.setItem(ANSWER_KEY, JSON.stringify(saved)); } catch(e){}
+      saveAnswers();
       updateCounter(ta);
+      refreshGate();
     });
   });
 
@@ -1031,10 +1194,6 @@
      MULTIPLE CHOICE — one attempt recorded per click
      ========================================================= */
   var mcqBlocks = Array.prototype.slice.call(document.querySelectorAll('.mcq'));
-
-  function saveMcq(){
-    try { localStorage.setItem(MCQ_KEY, JSON.stringify(mcqState)); } catch(e){}
-  }
 
   mcqBlocks.forEach(function(block){
     var qid  = block.dataset.qid;
@@ -1059,11 +1218,9 @@
     function paint(){
       var s = getState();
 
-      /* trials badge */
       trialsEl.textContent = 'Attempts: ' + s.attempts + (s.solved ? ' ✓' : '');
       trialsEl.classList.toggle('solved', s.solved);
 
-      /* options */
       opts.forEach(function(o, i){
         o.classList.remove('correct','wrong');
         o.disabled = s.solved;
@@ -1071,7 +1228,6 @@
         if(s.wrongPicks.indexOf(i) !== -1) o.classList.add('wrong');
       });
 
-      /* feedback */
       fbEl.classList.remove('good','bad');
       if(s.solved){
         fbEl.classList.add('good');
@@ -1082,6 +1238,8 @@
       } else {
         fbEl.textContent = '';
       }
+
+      refreshGate();
     }
 
     opts.forEach(function(opt, i){
@@ -1089,7 +1247,7 @@
         var s = getState();
         if(s.solved) return;
 
-        s.attempts += 1;                       /* record the trial */
+        s.attempts += 1;                 /* record the trial */
 
         if(i === correctIndex){
           s.solved = true;
@@ -1108,13 +1266,8 @@
   /* =========================================================
      REVIEW BUILDERS
      ========================================================= */
-  function escapeHtml(str){
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-              .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-
   function buildReview(){
-    /* ---- drone design log ---- */
+    /* ---- Part 1: drone design log ---- */
     var fields = Array.prototype.slice.call(document.querySelectorAll('.drone-page .field'));
     var html = '';
     fields.forEach(function(f){
@@ -1133,7 +1286,7 @@
     });
     reviewOut.innerHTML = html;
 
-    /* ---- MCQ trials summary ---- */
+    /* ---- Part 2: multiple-choice trials ---- */
     var sum = '';
     var totalAttempts = 0;
     var solvedCount = 0;
@@ -1152,7 +1305,8 @@
                (s.attempts || 0) + ' attempt' + ((s.attempts === 1) ? '' : 's') + ' recorded.</div>';
       } else if((s.attempts || 0) > 0){
         sum += '<div class="rev-a"><b style="color:#b91c1c;">Not solved yet</b> — ' +
-               s.attempts + ' attempt' + ((s.attempts === 1) ? '' : 's') + ' recorded. Go back and try again.</div>';
+               s.attempts + ' attempt' + ((s.attempts === 1) ? '' : 's') +
+               ' recorded. Go back and try again.</div>';
       } else {
         sum += '<div class="rev-a"><em>No attempts yet.</em></div>';
       }
@@ -1181,64 +1335,32 @@
     document.body.dataset.theme = pages[current].dataset.theme || 'design';
     stepLabel.textContent = pages[current].dataset.title || '';
     progressFill.style.width = ((current + 1) / total * 100) + '%';
-    navMid.textContent = 'Page ' + (current + 1) + ' of ' + total;
-
     btnPrev.disabled = (current === 0);
-    btnNext.disabled = (current === total - 1);
 
     if(current === total - 1){ buildReview(); }
+
+    refreshGate();
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   btnPrev.addEventListener('click', function(){ show(current - 1); });
-  btnNext.addEventListener('click', function(){ show(current + 1); });
+  btnNext.addEventListener('click', function(){
+    if(btnNext.disabled) return;
+    show(current + 1);
+  });
 
   document.addEventListener('keydown', function(e){
     var tag = (document.activeElement && document.activeElement.tagName) || '';
     if(tag === 'TEXTAREA' || tag === 'INPUT') return;
-    if(e.key === 'ArrowRight'){ show(current + 1); }
-    if(e.key === 'ArrowLeft'){ show(current - 1); }
+
+    if(e.key === 'ArrowRight' && !btnNext.disabled){ show(current + 1); }
+    if(e.key === 'ArrowLeft'  && !btnPrev.disabled){ show(current - 1); }
   });
 
   /* =========================================================
-     DOWNLOAD / PRINT / RESET
+     PRINT / RESET
      ========================================================= */
-  document.getElementById('btnDownload').addEventListener('click', function(){
-    var text = 'DRONE MEDICINE DELIVERY SYSTEM — DESIGN LOG\n';
-    text += '============================================\n\n';
-
-    var fields = Array.prototype.slice.call(document.querySelectorAll('.drone-page .field'));
-    fields.forEach(function(f){
-      var label = f.querySelector('label').textContent.trim();
-      var val = f.querySelector('textarea').value.trim() || '(not answered)';
-      text += label + '\n';
-      text += '--------------------------------------------\n';
-      text += val + '\n\n';
-    });
-
-    text += '\n============================================\n';
-    text += 'UNDERSTANDING CHECKS — ATTEMPTS RECORDED\n';
-    text += '============================================\n\n';
-    mcqBlocks.forEach(function(block){
-      var qid = block.dataset.qid;
-      var s = mcqState[qid] || { attempts:0, solved:false };
-      text += (block.dataset.label || qid) + ': ' +
-              (s.solved ? 'SOLVED' : 'not solved') +
-              ' — ' + (s.attempts || 0) + ' attempt(s)\n';
-    });
-
-    var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'drone-design-log.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-  });
-
   document.getElementById('btnPrint').addEventListener('click', function(){
     buildReview();
     window.print();
